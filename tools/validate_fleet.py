@@ -32,10 +32,25 @@ for p in glob.glob(".claude/skills/*/SKILL.md"):
     check("## Steps" in body or "## Rules" in body or "## When" in body, f"{p}: no Steps/Rules section")
     check(len(body.splitlines()) <= 150, f"{p}: over 150 lines — split it")
 
-for p in glob.glob(".github/hooks/*.json"):
+hook_files = glob.glob(".github/hooks/*.json")
+check(hook_files, ".github/hooks/: no hook files — the guardrails the README promises are not here")
+for p in hook_files:
     try:
         d = json.load(open(p)); check(d.get("version") == 1 and isinstance(d.get("hooks"), dict), f"{p}: bad shape")
     except Exception as e: check(False, f"{p}: {e}")
+
+# A hook that points at a script which does not exist is worse than no hook:
+# it reads as enforcement and enforces nothing.
+for p in hook_files:
+    try: d = json.load(open(p))
+    except Exception: continue
+    for event, entries in (d.get("hooks") or {}).items():
+        for e in entries if isinstance(entries, list) else []:
+            for field in ("bash", "powershell", "command"):
+                cmd = e.get(field) or ""
+                for token in cmd.split():
+                    if token.endswith(".py"):
+                        check(os.path.exists(token), f"{p}: {event} points at {token}, which does not exist")
 
 for p in glob.glob(".github/instructions/*.instructions.md"):
     check(re.search(r"^applyTo:", open(p).read(), re.M), f"{p}: missing applyTo")
