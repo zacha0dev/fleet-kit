@@ -1,0 +1,90 @@
+{
+  "$comment": [
+    "v2 MCP configuration — a template. Nothing here is live; every REPLACE_ME is yours to fill.",
+    "The difference from v1 is not which servers exist. It is who the call is made as.",
+    "v1 (.github/mcp.json): the session is already signed in, so a server inherits that session's identity implicitly.",
+    "v2 (this file): a container has no session. Each server must be told, per call, whose authority it is acting under,",
+    "and must refuse the call when it cannot establish one. There is deliberately no shared credential in this file."
+  ],
+
+  "identity": {
+    "$comment": "Read by the runner before any server is contacted. These are the rules, not a connection.",
+    "mode": "caller",
+    "source": "the identity supplied with the request that triggered this run",
+    "forwardToServers": true,
+    "failClosed": true,
+    "$failClosedMeaning": "If a caller identity cannot be established and forwarded, the run stops. It does not fall back to the container's own identity, and it does not fall back to a service account.",
+    "audit": {
+      "recordPerCall": ["server", "tool", "callerId", "timestamp", "outcome"],
+      "$comment": "One line per tool call, not one line per run. 'Which agent touched which source on whose behalf' should be answerable without reading a transcript."
+    }
+  },
+
+  "defaults": {
+    "$comment": "Applied to every server below unless that server overrides it.",
+    "transport": "http",
+    "requireTls": true,
+    "timeoutSec": 30,
+    "network": "private",
+    "$networkMeaning": "Reachable only from the fleet's own network. A source that must be reached over the public internet is a deliberate exception and says so."
+  },
+
+  "servers": {
+    "issues": {
+      "$comment": "Read the work. A runner that can close an issue can close the wrong one, so this one cannot write.",
+      "url": "REPLACE_ME",
+      "tools": ["list_issues", "get_issue", "search_issues"],
+      "identity": "caller",
+      "writes": false
+    },
+
+    "repo": {
+      "$comment": "Read code and open branches. Merging is not here on purpose — that is a human gate, in v1 and v2 alike.",
+      "url": "REPLACE_ME",
+      "tools": ["get_file", "search_code", "list_commits", "create_branch", "push_files"],
+      "identity": "caller",
+      "writes": true,
+      "deny": ["merge_pull_request", "delete_branch", "force_push"],
+      "$denyMeaning": "Named here as well as in tools/hooks/guard.py. The hook is the enforcement; this list is so a reader of the config knows the rule exists without reading Python."
+    },
+
+    "ci": {
+      "$comment": "Read build and test results. Triggering a run is allowed; changing the pipeline is not.",
+      "url": "REPLACE_ME",
+      "tools": ["get_run", "list_runs", "get_logs", "trigger_run"],
+      "identity": "caller",
+      "writes": false,
+      "rateLimit": { "callsPerRun": 20 }
+    },
+
+    "docs": {
+      "$comment": "Reference material. The one server that may legitimately be public, so it says so rather than inheriting 'private' silently.",
+      "url": "REPLACE_ME",
+      "tools": ["search", "fetch"],
+      "identity": "caller",
+      "network": "public",
+      "writes": false
+    },
+
+    "messaging": {
+      "$comment": "The exception that proves the rule. Present so a runner can READ context from a thread. Sending is absent and denied, because customer-facing communication is drafts only and a human sends. If you add a send tool here, you have broken the fleet's central promise.",
+      "url": "REPLACE_ME",
+      "tools": ["list_threads", "read_thread"],
+      "identity": "caller",
+      "writes": false,
+      "deny": ["send_message", "reply", "post"]
+    }
+  },
+
+  "perAgent": {
+    "$comment": "Each agent sees only the servers its role needs. This mirrors the tools allowlist already declared in .github/agents/<name>.agent.md — the agent file is the source of truth, and this is how that declaration becomes a network boundary rather than a suggestion.",
+    "lead": ["issues", "ci"],
+    "triager": ["issues", "repo", "ci", "messaging"],
+    "implementer": ["repo", "ci"],
+    "test-writer": ["repo", "ci"],
+    "reviewer": ["repo", "ci"],
+    "quality-auditor": ["repo"],
+    "pattern-miner": ["repo"],
+    "security-scanner": ["repo", "docs"]
+  }
+}

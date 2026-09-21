@@ -1,0 +1,13 @@
+{
+  "$comment": "The roster the deployment loops over. One entry becomes one container app. Trim it: not every agent needs a runner, and the ones that only read can be smaller.",
+  "agents": [
+    { "name": "lead",         "cpu": 0.5, "memory": "1Gi", "note": "the orchestrator; routes work and merges reports" },
+    { "name": "triager",      "cpu": 0.5, "memory": "1Gi", "note": "reproduces and classifies; reads and runs, never edits" },
+    { "name": "implementer",  "cpu": 1.0, "memory": "2Gi", "note": "edits and runs the suite; the heaviest runner" },
+    { "name": "test-writer",  "cpu": 0.5, "memory": "1Gi" },
+    { "name": "reviewer",     "cpu": 0.5, "memory": "1Gi" },
+    { "name": "quality-auditor", "cpu": 0.25, "memory": "0.5Gi", "note": "scores finished sessions; read-only" },
+    { "name": "pattern-miner",   "cpu": 0.25, "memory": "0.5Gi", "note": "weekly; finds the repeat" },
+    { "name": "security-scanner","cpu": 0.5, "memory": "1Gi" }
+  ]
+}
