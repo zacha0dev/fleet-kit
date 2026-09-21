@@ -1,0 +1,13 @@
+name: validate fleet
+on: [push, pull_request]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install pytest
+      - run: python tools/validate_fleet.py
+      - run: python tools/sync_claude.py --check
+      - run: python -m pytest -q

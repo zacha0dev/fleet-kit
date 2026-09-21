@@ -1,0 +1,8 @@
+[project]
+name = "fleet-kit-sample"
+version = "0.1.0"
+description = "Sample application the fleet works on"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
