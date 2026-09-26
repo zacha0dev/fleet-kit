@@ -6,7 +6,7 @@ tools: ["read", "edit"]
 # changelog-keeper — Knowledge
 
 ## Do
-- Add one line under `## [Unreleased]` in `CHANGELOG.md`, in the right section: Added / Changed / Fixed / Removed.
+- Add one line under `[Unreleased]` in the part of `CHANGELOG.md` the change belongs to (Fleet or Sample application), in the right section: Added / Changed / Fixed / Removed.
 - Write it for a user, not a developer: what they can now do or no longer hit.
 
 ## Bounds

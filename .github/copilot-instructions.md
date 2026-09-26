@@ -19,4 +19,5 @@ This repository is a small agent fleet and the sample application it works on. R
 - Skills: `.claude/skills/<name>/SKILL.md` (read by both Copilot and Claude Code)
 - Path rules: `.github/instructions/*.instructions.md`
 - Hooks: `.github/hooks/*.json` (Copilot) and `.claude/settings.json` (Claude Code) — both call `tools/hooks/guard.py`
+- Slash prompts: `.github/prompts/*.prompt.md` (Copilot Chat) and `.claude/commands/*.md` (Claude Code), kept in pairs
 - Corpus, registers, evals, board: `fleet/`

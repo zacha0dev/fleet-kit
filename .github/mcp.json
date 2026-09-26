@@ -2,7 +2,7 @@
   "mcpServers": {
     "github": {
       "type": "http",
-      "url": "https://api.githubcopilot.com/mcp/",
+      "url": "https://api.githubcopilot.com/mcp/readonly",
       "tools": [
         "*"
       ]
@@ -11,10 +11,18 @@
       "type": "local",
       "command": "npx",
       "args": [
-        "@playwright/mcp@latest"
+        "@playwright/mcp@0.0.82"
       ],
       "tools": [
-        "*"
+        "browser_navigate",
+        "browser_snapshot",
+        "browser_take_screenshot",
+        "browser_console_messages",
+        "browser_network_requests",
+        "browser_click",
+        "browser_type",
+        "browser_wait_for",
+        "browser_close"
       ]
     }
   }

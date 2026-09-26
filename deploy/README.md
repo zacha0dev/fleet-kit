@@ -1,6 +1,9 @@
 # deploy — the v2 template
 
-**Status: a template, not a deployment.** Nothing here is running anywhere. These files are the shape a hosted fleet would take, written out so it can be read, argued with and adapted before anyone provisions a thing. Every value you must supply is marked `REPLACE_ME`.
+**Status: a template, not a deployment.**
+
+"v1" in this repository means the fleet as it runs today, inside a Claude Code or Copilot session on a workstation. "v2" means the same files run as hosted containers, which is what this directory sketches.
+ Nothing here is running anywhere. These files are the shape a hosted fleet would take, written out so it can be read, argued with and adapted before anyone provisions a thing. Every value you must supply is marked `REPLACE_ME`.
 
 The design reasoning is in [`docs/hosted-runners.md`](../docs/hosted-runners.md). This directory is the mechanical half.
 
@@ -20,10 +23,10 @@ The agents, skills, flows and limits in this repository do not change. An agent 
 
 | File | What it is |
 |---|---|
-| `Dockerfile` | One image for every agent. The agent is chosen at start by `FLEET_AGENT`, so eighteen agents are eighteen apps from one build, not eighteen images. |
-| `agents.json` | The roster the deployment loops over: which agents get a runner, and how much each may consume. |
-| `mcp-hosted.json` | **The centre of this directory.** The v2 MCP configuration: each source reached through its own governed connection, with the caller's identity forwarded per call rather than a stored credential, and each agent seeing only the servers its role needs. |
-| `run-once.sh` | What a trigger actually invokes — one agent, one task, one log line. |
+| `Dockerfile` | One image for every agent. The agent is chosen at start by `FLEET_AGENT`, so each agent on the roster is one container app from the same build, not its own image. Today its entry point, `tools/runner.py`, prints the run plan and exits 2: no agent CLI is installed in the image. |
+| `agents.json` | The roster the deployment loops over: which agents get a runner, and how much each may consume. It lists 8 of the 18 agents; the rest are not expected to need a hosted runner. |
+| `mcp-hosted.json` | **The centre of this directory.** The v2 MCP configuration: each source reached through its own governed connection (one connection per source, with its own allowlist of tools, network scope and write permission, so each can be limited and audited on its own), with the caller's identity forwarded per call rather than a stored credential, and each agent seeing only the servers its role needs. |
+| `run-once.sh` | What a trigger actually invokes — one agent, one task, one run id. Requires `FLEET_CALLER_ID` and `FLEET_RESOURCE_GROUP`; refuses to run while either is unset or still `REPLACE_ME`. |
 
 ## How it fits together
 
@@ -50,7 +53,7 @@ Start by reading `mcp-hosted.json`. It is the architecture; the rest is packagin
 docker build -t REPLACE_ME/fleet-kit:latest -f deploy/Dockerfile .
 
 # Run one agent once, as a named caller
-FLEET_CALLER_ID=someone@example.com ./deploy/run-once.sh triager "reproduce the failing pricing test"
+FLEET_CALLER_ID=someone@example.com FLEET_RESOURCE_GROUP=my-group ./deploy/run-once.sh triager "reproduce the failing pricing test"
 ```
 
 The hosting platform is deliberately not prescribed beyond the one `az` line in `run-once.sh`. Azure Container Apps is what this was written against, but nothing in the design needs it — a container per agent, a private network, a per-call identity and a retained log is the whole requirement.

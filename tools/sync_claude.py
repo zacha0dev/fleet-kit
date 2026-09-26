@@ -3,8 +3,19 @@
 
 Copilot CLI reads both directories and dedupes by name, so the mirror is harmless there;
 Claude Code reads only .claude/agents/. One source, one generated copy, checked in CI.
+
+Files are read and written as UTF-8 with LF endings, and compared with line endings normalised,
+so a Windows checkout (core.autocrlf, cp1252 default encoding) gives the same answer as CI.
 """
 import glob, os, re, sys
+
+def read(path):
+    with open(path, encoding="utf-8", newline="") as f:
+        return f.read().replace("\r\n", "\n")
+
+def write(path, text):
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.write(text)
 
 TOOL_MAP = {"read": "Read", "search": "Grep, Glob", "edit": "Edit, Write", "execute": "Bash", "agent": "Task", "web": "WebFetch, WebSearch"}
 
@@ -28,12 +39,12 @@ def main():
     os.makedirs(".claude/agents", exist_ok=True)
     drift = []
     for src in sorted(glob.glob(".github/agents/*.agent.md")):
-        name, out = convert(open(src).read())
+        name, out = convert(read(src))
         dst = f".claude/agents/{name}.md"
-        cur = open(dst).read() if os.path.exists(dst) else None
+        cur = read(dst) if os.path.exists(dst) else None
         if cur != out:
             if check: drift.append(dst)
-            else: open(dst, "w").write(out)
+            else: write(dst, out)
     if check and drift:
         print("mirror out of date:", *drift, sep="\n  "); sys.exit(1)
     print("ok" if check else f"synced {len(glob.glob('.github/agents/*.agent.md'))} agents")

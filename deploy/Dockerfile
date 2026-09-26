@@ -8,13 +8,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends git ca-certific
 WORKDIR /fleet
 
 # The fleet is files. Copy the definitions, not a runtime.
-COPY .github/agents/      .github/agents/
-COPY .github/instructions/ .github/instructions/
-COPY .github/hooks/       .github/hooks/
-COPY .claude/skills/      .claude/skills/
+COPY .github/             .github/
+COPY .claude/             .claude/
 COPY flows/               flows/
+COPY fleet/               fleet/
 COPY tools/               tools/
-COPY AGENTS.md CLAUDE.md  ./
+COPY reports/             reports/
+COPY drafts/              drafts/
+COPY sample_app/          sample_app/
+COPY tests/               tests/
+COPY AGENTS.md CLAUDE.md README.md pyproject.toml ./
+COPY deploy/agents.json   deploy/agents.json
 COPY deploy/mcp-hosted.json /fleet/mcp.json
 
 RUN pip install --no-cache-dir pytest
@@ -27,4 +31,7 @@ ENV FLEET_IDENTITY_MODE="caller"
 
 # Fail closed: refuse to start without an agent name, and verify the fleet
 # definitions are structurally valid before accepting any work.
+# tools/runner.py prints the plan for the run and exits 2: this image has no
+# agent CLI in it yet. Install one (Claude Code or GitHub Copilot CLI) above and
+# replace the last step of tools/runner.py before treating this as a runner.
 ENTRYPOINT ["/bin/sh", "-c", "test -n \"$FLEET_AGENT\" || { echo 'FLEET_AGENT is not set; refusing to start' >&2; exit 1; }; python tools/validate_fleet.py && exec python -m tools.runner --agent \"$FLEET_AGENT\""]

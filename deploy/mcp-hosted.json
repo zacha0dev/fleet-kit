@@ -45,7 +45,7 @@
       "identity": "caller",
       "writes": true,
       "deny": ["merge_pull_request", "delete_branch", "force_push"],
-      "$denyMeaning": "Named here as well as in tools/hooks/guard.py. The hook is the enforcement; this list is so a reader of the config knows the rule exists without reading Python."
+      "$denyMeaning": "force_push is also denied on a workstation by tools/hooks/guard.py (DENY[0]). merge_pull_request and delete_branch are not in the hook: they rely on this list being enforced by whatever hosts the server, and on the human gate."
     },
 
     "ci": {
@@ -77,7 +77,7 @@
   },
 
   "perAgent": {
-    "$comment": "Each agent sees only the servers its role needs. This mirrors the tools allowlist already declared in .github/agents/<name>.agent.md — the agent file is the source of truth, and this is how that declaration becomes a network boundary rather than a suggestion.",
+    "$comment": "Each agent sees only the servers its role needs. This list is written by hand from each agent's role in .github/agents/<name>.agent.md; it is not generated from, or checked against, the agent's tools line (those name local tools such as read and edit, not MCP servers). Keeping the two in step is a review task. Once enforced by the platform, this is where an agent's reach becomes a network boundary rather than a suggestion.",
     "lead": ["issues", "ci"],
     "triager": ["issues", "repo", "ci", "messaging"],
     "implementer": ["repo", "ci"],
