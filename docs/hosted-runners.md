@@ -4,7 +4,7 @@
 
 ## What runs today
 
-The fleet runs inside a Copilot session on a workstation. An engineer prompts, the orchestrator routes the task, agents load their skills, skills reach tools through MCP, and the result comes back. Every call runs as the engineer, using the access they already have.
+The fleet runs inside a Claude Code or GitHub Copilot session on a workstation. An engineer prompts, the orchestrator routes the task, agents load their skills, skills reach tools through MCP, and the result comes back. Every call runs as the engineer, using the access they already have.
 
 Two things follow from that, and both are limits:
 
@@ -19,7 +19,7 @@ The agent files, the skills, the flows and the limits do not change at all. What
 
 | | On a workstation | As a hosted runner |
 |---|---|---|
-| Where it runs | one Copilot session | one container per agent |
+| Where it runs | one Claude Code or Copilot session | one container per agent |
 | What starts it | a person typing | a prompt, a schedule, or an event |
 | How it is reached | locally | over a private network |
 | Identity | the session's signed-in user | verified by the container on every call |
@@ -33,7 +33,7 @@ The agent files, the skills, the flows and the limits do not change at all. What
                                                    │
                                     ┌──────────────┴──────────────┐
                                     │   container per agent       │
-                                    │   scoper · triager · …      │
+                                    │   lead · triager · …        │
                                     │   each verifies identity    │
                                     │   and auth on every call    │
                                     └──────────────┬──────────────┘
@@ -47,6 +47,8 @@ The agent files, the skills, the flows and the limits do not change at all. What
                                                    │
                                     results and drafts ──▶ engineer
 ```
+
+"Federated MCP" here means there is no single gateway holding every credential: each source is its own MCP server, reached through its own connection, with the caller's identity passed through. A "governed connection" is one of those connections with its own tool allowlist, network scope and write permission, so it can be limited and audited on its own. `deploy/mcp-hosted.json` spells both out.
 
 One container per agent, rather than one container running everything, for three reasons:
 

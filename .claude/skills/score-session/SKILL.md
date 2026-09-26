@@ -4,7 +4,7 @@ description: Score a finished session against the rubric and record it. Use afte
 ---
 # Score a session
 
-Each line 0 (absent), 1 (partial), 2 (present). Cite the artifact for every 2.
+Each line 0 (absent), 1 (partial), 2 (present). Cite the artifact for every 2. A line that does not apply is `—` and lowers the maximum by 2.
 
 | # | Rubric line | Evidence to look for |
 |---|-------------|----------------------|
@@ -18,7 +18,7 @@ Each line 0 (absent), 1 (partial), 2 (present). Cite the artifact for every 2.
 Append to `fleet/evals/scorecards.md`:
 
 ```
-| <date> | <agent> | <session id or PR> | 1:_ 2:_ 3:_ 4:_ 5:_ 6:_ | <total>/12 | <one-line note> |
+| <date> | <agent> | <session id or PR> | 1:_ 2:_ 3:_ 4:_ 5:_ 6:_ | <total>/<max> | <one-line note> |
 ```
 
 ## Rules

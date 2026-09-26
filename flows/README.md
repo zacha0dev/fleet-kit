@@ -12,7 +12,7 @@ A flow is the unit that makes the fleet repeatable. An agent knows its role and 
 4. When an engineer corrects something, the correction is written into the flow or into the agent that should have known it, so the next run starts from the better version.
 5. Flows chain. One flow's handoff is the next flow's trigger, and a chain of them finishes a complete job without anyone driving each step.
 
-That chaining is what we mean by **loop engineering**: capture how the work is actually done, give it bounds, run it, and strengthen it every time it runs.
+That chaining is what this repository calls **loop engineering**, a name for a practice rather than an established term: capture how the work is actually done, give it bounds, run it, and strengthen it each time it runs.
 
 ## Writing one
 

@@ -1,0 +1,31 @@
+# fleet-kit
+
+> A reference layout for a bounded agent fleet for Claude Code and GitHub Copilot: eighteen agents, ten skills, flows that chain them, a PreToolUse guard hook, and a small Python sample project with one seeded bug (KI-1). Every role, procedure and limit is a file; there is no custom runtime.
+
+Start with README.md. Agent definitions in .github/agents/ are canonical; .claude/agents/ is generated from them by tools/sync_claude.py. The hosted-runner material in deploy/ and docs/ is a design, not a deployment.
+
+## Core
+
+- [README](README.md): what the layout is, quickstart, guardrails, layout
+- [Working instructions](.github/copilot-instructions.md): rules every agent follows
+- [AGENTS.md](AGENTS.md): the six rules that apply in every tool
+- [The fleet](fleet/README.md): every agent, one line each
+
+## Mechanics
+
+- [Guard hook](tools/hooks/guard.py): DENY[0] force-push, DENY[1] reset --hard, DENY[2] test deselection, DENY[3] outbound sends
+- [Stop hook](tools/hooks/require_report.py): blocks once if no session report is dated today
+- [Validator](tools/validate_fleet.py): structural checks run in CI
+- [Flows](flows/README.md): paths that worked, chained by handoff
+- [Skills](.claude/skills/): procedures, one folder each
+
+## Evaluation
+
+- [Rubric](fleet/evals/rubric.md) and [scorecards](fleet/evals/scorecards.md): scoring (current rows are seeds)
+- [KI-1 triage case](fleet/evals/cases/triage-ki-1.md): the demo's expected behavior
+
+## Optional
+
+- [Hosted runners design](docs/hosted-runners.md)
+- [Deploy template](deploy/README.md)
+- [Changelog](CHANGELOG.md)

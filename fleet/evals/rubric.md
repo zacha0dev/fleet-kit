@@ -1,5 +1,7 @@
 # Session rubric
 
+Six lines, 0–2 each: a full session is out of 12. A line that does not apply is marked `—` and lowers the maximum by 2.
+
 | # | Line | 0 | 1 | 2 |
 |---|------|---|---|---|
 | 1 | Report in the fixed shape | missing | partial | all four fields |

@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use or adapt this layout, please cite it as below."
+title: "fleet-kit: a reference layout for a bounded agent fleet for Claude Code and GitHub Copilot"
+type: software
+authors:
+  - given-names: Zachary
+    family-names: Allen
+    alias: zacha0dev
+version: 0.2.0
+date-released: 2026-09-26
+license: MIT
+repository-code: "https://github.com/zacha0dev/fleet-kit"
+keywords:
+  - agents
+  - claude-code
+  - github-copilot
+  - mcp
+  - hooks
